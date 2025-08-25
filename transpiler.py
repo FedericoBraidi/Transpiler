@@ -17,7 +17,7 @@ for token in token_list:
 
 # Build the AST (parsing the tokens)
 parser = Parser(token_list)
-tree = parser.parse()
+tree = parser.parse_file()
 
 # Build Python code from the AST
 generator = Generator()

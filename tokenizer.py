@@ -6,6 +6,7 @@ regexes = [
     ['print', r'\bconsole.log\b'],
     ['if', r'\bif\b'],
     ['else', r'\belse\b'],
+    ['return', r'\breturn\b'],
     ['string', r"'[^']*'"],
     ['string', r'"[^"]*"'],
     ['var_decl', r'\b(var|const|let)\b'],
@@ -38,10 +39,11 @@ class Tokenizer():
         self.code = text
 
     def tokenize(self):
-        tokens = []
+        tokens = [Token(type='oscope', value='{')]
         while self.code != "":
             tokens.append(self.tokenize_one())
             self.code = self.code.strip()
+        tokens.append(Token(type='cscope', value='}'))
         return tokens
 
     def tokenize_one(self):

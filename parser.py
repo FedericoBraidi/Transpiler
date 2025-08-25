@@ -2,16 +2,17 @@ class Parser():
     def __init__(self, tokens):
         self.tokens = tokens
 
-    def parse(self):
-        tree = self.parse_def()
-        return tree
+    def parse_file(self):
+        body = self.parse_body()
+        return FileNode(body=body)
 
     def parse_def(self):
         self.consume('function')
         name = self.consume('identifier')
         arg_names = self.parse_args()
         body = self.parse_body()
-        return FunctionNode(name=name.value, args=arg_names, body=body)
+        a = FunctionNode(name=name.value, args=arg_names, body=body)
+        return a
 
     def parse_args(self):
         args = []
@@ -26,6 +27,19 @@ class Parser():
         self.consume('cparen')
         return args
 
+    def parse_args_call(self):
+        args = []
+        self.consume('oparen')
+        if not self.peek('cparen'):
+            arg = self.parse_expr()
+            args.append(arg)
+            while self.peek('comma'):
+                self.consume('comma')
+                arg = self.parse_expr()
+                args.append(arg)
+        self.consume('cparen')
+        return args
+
     def parse_body(self):
         statements = []
         self.consume('oscope')
@@ -36,12 +50,16 @@ class Parser():
         return statements
 
     def parse_statement(self):
-        if self.peek('if'):
+        if self.peek('function'):
+            return self.parse_def()
+        elif self.peek('if'):
             return self.parse_if()
         elif self.peek('print'):
             return self.parse_print()
         elif self.peek('var_decl'):
             return self.parse_var_decl()
+        elif self.peek('return'):
+            return self.parse_return()
         else:
             raise RuntimeError(f"Statement is not among the accepted ones. Next token is {self.tokens[0].print()}")
 
@@ -119,7 +137,7 @@ class Parser():
                 self.consume('semicolon')
                 return AssignmentExprNode(ident, op, value)
             else:
-                return ident.value
+                return VarNode(name=ident.value)
         elif self.peek('oparen'):
             self.consume('oparen')
             expr = self.parse_expr()
@@ -137,8 +155,14 @@ class Parser():
         return StringNode(value=token.value)
 
     def parse_func_call(self, iden):
-        args = self.parse_args()
+        args = self.parse_args_call()
         return FuncCallNode(name=iden, args=args)
+
+    def parse_return(self):
+        self.consume('return')
+        expr = self.parse_expr()
+        self.consume('semicolon')
+        return ReturnNode(expr=expr)
 
     def parse_if(self):
         self.consume('if')
@@ -280,3 +304,24 @@ class VarDeclNode():
 
     def __str__(self):
         return f"A node representing the declaration of a variable with:\nName:\t{self.name}\nExpression:\t{self.expr.__str__()}"
+
+class FileNode():
+    def __init__(self, body):
+        self.body = body
+
+    def __str__(self):
+        return f"A node representing the whole file whose sub-nodes are:\n{self.body}"
+
+class VarNode():
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f"A node representing a reference to a variable named {self.name}"
+
+class ReturnNode():
+    def __init__(self, expr):
+        self.expr = expr
+
+    def __str__(self):
+        return f"A node representing a return statement with:\nReturn Expression:{self.expr}"

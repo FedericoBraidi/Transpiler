@@ -4,6 +4,11 @@ import re
 regexes = [
     ['function', r'\bfunction\b'],
     ['print', r'\bconsole.log\b'],
+    ['if', r'\bif\b'],
+    ['else', r'\belse\b'],
+    ['string', r"'[^']*'"],
+    ['string', r'"[^"]*"'],
+    ['var_decl', r'\b(var|const|let)\b'],
     ['identifier', r'\b[a-zA-Z]+\b'],
     ['integer', r'\b[0-9]+\b'],
     ['oscope', r'\{'],
@@ -11,7 +16,21 @@ regexes = [
     ['oparen', r'\('],
     ['cparen', r'\)'],
     ['semicolon', r'\;'],
-    ['comma', r'\,'],
+    ['comma', r','],
+    ['comparequal', r'==='],
+    ['comparenotequal', r'!=='],
+    ['increment', r'\+='],
+    ['assign', r'='],
+    ['sum', r'\+'],
+    ['subtract', r'-'],
+    ['times', r'\*'],
+    ['divide', r'/'],
+    ['geq', r'>='],
+    ['leq', r'<='],
+    ['gt', r'>'],
+    ['lt', r'<'],
+    ['and', r'\&&'],
+    ['or', r'\||']
 ]
 
 class Tokenizer():

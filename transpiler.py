@@ -18,11 +18,12 @@ for token in token_list:
 # Build the AST (parsing the tokens)
 parser = Parser(token_list)
 tree = parser.parse()
-print(tree)
 
 # Build Python code from the AST
 generator = Generator()
 code = generator.generate(tree)
+print(code)
+print("------------------------------")
 
 # Write the code to a file
 path = "translated_code.py"
